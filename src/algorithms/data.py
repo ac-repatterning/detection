@@ -7,7 +7,6 @@ import dask.dataframe as ddf
 import numpy as np
 import pandas as pd
 
-import src.elements.attribute as atr
 import src.elements.specification as sc
 import src.timings
 
@@ -68,11 +67,10 @@ class Data:
 
         return data
 
-    def exc(self, specification: sc.Specification, attribute: atr.Attribute) -> pd.DataFrame:
+    def exc(self, specification: sc.Specification) -> pd.DataFrame:
         """
 
         :param specification:
-        :param attribute:
         :return:
         """
 
