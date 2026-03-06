@@ -10,8 +10,8 @@ import src.algorithms.asymptote
 import src.algorithms.attributes
 import src.algorithms.data
 import src.algorithms.gap
-import src.algorithms.limits
 import src.algorithms.occurrences
+import src.algorithms.persist
 import src.algorithms.perspective
 import src.assets.menu
 import src.elements.attribute as atr
@@ -43,8 +43,7 @@ class Interface:
             connector=connector, s3_parameters=s3_parameters, arguments=arguments).exc)
         self.__gap = dask.delayed(src.algorithms.gap.Gap(arguments=arguments).exc)
         self.__asymptote = dask.delayed(src.algorithms.asymptote.Asymptote(arguments=arguments).exc)
-        self.__limits = dask.delayed(src.algorithms.limits.Limits(
-            connector=connector, s3_parameters=s3_parameters, arguments=arguments).exc)
+        self.__persist = dask.delayed(src.algorithms.persist.Persist().exc)
 
     def exc(self, specifications: list[sc.Specification], reference: pd.DataFrame):
         """
@@ -64,7 +63,7 @@ class Interface:
                 attribute=attribute, data=data, specification=specification)
             __appending_gap: pd.DataFrame = self.__gap(data=__estimates)
             __appending_asymptote: pd.DataFrame = self.__asymptote(data=__appending_gap)
-            estimates: pd.DataFrame = self.__limits(data=__appending_asymptote, specification=specification)
+            estimates: pd.DataFrame = self.__persist(specification=specification, estimates=__appending_asymptote)
 
             vector: dict = __occurrences(frame=estimates, specification=specification)
             computations.append(vector)
