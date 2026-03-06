@@ -17,7 +17,7 @@ class Occurrences:
         Constructor
         """
 
-        self.__names = ['p_anomaly', 'gap', 'missing', 'asymptote', 'extreme']
+        self.__names = ['p_anomaly', 'gap', 'missing', 'asymptote']
 
     def exc(self, frame: pd.DataFrame, specification: sc.Specification) -> dict:
         """
