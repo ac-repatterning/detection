@@ -24,7 +24,7 @@ class Questionable:
         """
 
         self.__arguments = arguments
-        self.__factor = 0.01
+        self.__factor = 0.01/0.0008
 
         # Future
         key_name = f'{self.__arguments.get('prefix').get('metrics')}/metrics/aggregates/by_stage.json'
@@ -49,8 +49,8 @@ class Questionable:
         median = quantiles.get('median_pe')
         l_limit = quantiles.get('l_whisker_pe_extreme')
         u_limit = quantiles.get('u_whisker_pe_extreme')
-        l_boundary = l_limit - (abs(self.__factor/l_limit) * (median - l_limit))
-        u_boundary = u_limit + (abs(self.__factor/u_limit) * (u_limit - median))
+        l_boundary = l_limit - (self.__factor * (median - l_limit))
+        u_boundary = u_limit + (self.__factor * (u_limit - median))
 
         # An anomaly vis-à-vis quantiles metrics?
         p_outliers = np.where((points < l_boundary) | (points > u_boundary), 1, 0)
