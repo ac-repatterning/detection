@@ -72,6 +72,9 @@ class Persist:
         :return:
         """
 
+        if estimates.empty:
+            return estimates
+
         __estimates = estimates.copy()
 
         p_anomalies = self.__p_anomalies(estimates=__estimates.copy())
