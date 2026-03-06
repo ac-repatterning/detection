@@ -58,7 +58,7 @@ class Interface:
         computations = []
         for specification in specifications:
             attribute: atr.Attribute = self.__get_attributes(specification=specification)
-            data: pd.DataFrame = self.__get_data(specification=specification, attribute=attribute)
+            data: pd.DataFrame = self.__get_data(specification=specification)
             __estimates: pd.DataFrame = self.__get_special_estimates(
                 attribute=attribute, data=data, specification=specification)
             __appending_gap: pd.DataFrame = self.__gap(data=__estimates)
