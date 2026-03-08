@@ -23,7 +23,6 @@ class Gap:
         """
 
         self.__arguments = arguments
-        self.__hours = 15
         self.__settings: dict = arguments.get('detecting').get('gap')
 
     def __get_reference(self, minimum: pd.Timestamp, maximum: pd.Timestamp):
@@ -35,7 +34,7 @@ class Gap:
         """
 
         # upper limit
-        _until = datetime.datetime.now() - datetime.timedelta(hours=self.__hours)
+        _until = datetime.datetime.now() - datetime.timedelta(hours=self.__settings.get('hours'))
         until = datetime.datetime.strptime(_until.strftime(format='%Y-%m-%d %H') + ':00:00', '%Y-%m-%d %H:%M:%S')
 
         # reference range
