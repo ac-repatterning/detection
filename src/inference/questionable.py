@@ -24,16 +24,15 @@ class Questionable:
         """
 
         self.__arguments = arguments
-        self.__factor = 0.01/0.0008
 
         # Future
         key_name = f'{self.__arguments.get('prefix').get('metrics')}/metrics/aggregates/by_stage.json'
         __aggregates = src.s3.serials.Serials(
             connector=connector, bucket_name=s3_parameters.external).objects(key_name=key_name)
-        frame = pd.json_normalize(data=__aggregates.get('testing'), record_path='data')
-        self.__aggregates = frame.set_axis(labels=__aggregates.get('testing').get('columns'), axis=1)
+        frame = pd.json_normalize(data=__aggregates.get('training'), record_path='data')
+        self.__aggregates = frame.set_axis(labels=__aggregates.get('training').get('columns'), axis=1)
 
-    def __plausible_anomalies(self, frame: pd.DataFrame, ts_id: int) -> np.ndarray:
+    def __p_anomalies(self, frame: pd.DataFrame, ts_id: int) -> np.ndarray:
         """
 
         :param frame:
@@ -44,16 +43,13 @@ class Questionable:
         points: np.ndarray = frame['p_error'].values
         real: np.ndarray = frame['original'].notna().values
 
-        # Quantiles & Boundaries
-        quantiles = self.__aggregates.loc[self.__aggregates['ts_id'] == ts_id, :][:1].squeeze()
-        median = quantiles.get('median_pe')
-        l_limit = quantiles.get('l_whisker_pe_extreme')
-        u_limit = quantiles.get('u_whisker_pe_extreme')
-        l_boundary = l_limit - (self.__factor * (median - l_limit))
-        u_boundary = u_limit + (self.__factor * (u_limit - median))
+        # Metrics & Boundaries
+        metrics = self.__aggregates.loc[self.__aggregates['ts_id'] == ts_id, :][:1].squeeze()
+        l_limit = metrics.get('minimum_pe')
+        u_limit = metrics.get('maximum_pe')
 
-        # An anomaly vis-à-vis quantiles metrics?
-        p_outliers = np.where((points < l_boundary) | (points > u_boundary), 1, 0)
+        # An anomaly vis-à-vis metrics?
+        p_outliers = np.where((points < l_limit) | (points > u_limit), 1, 0)
         p_anomalies = np.where(p_outliers & real, 1, 0)
 
         return p_anomalies
@@ -67,7 +63,7 @@ class Questionable:
         """
 
         frame = estimates.copy()
-        p_anomalies = self.__plausible_anomalies(frame=frame.copy(), ts_id=specification.ts_id)
+        p_anomalies = self.__p_anomalies(frame=frame.copy(), ts_id=specification.ts_id)
         frame = frame.assign(p_anomaly=p_anomalies)
 
         return frame
