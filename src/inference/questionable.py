@@ -23,14 +23,28 @@ class Questionable:
         :param arguments: A set of arguments vis-à-vis computation & storage objectives.<br>
         """
 
+        self.__connector = connector
+        self.__s3_parameters = s3_parameters
         self.__arguments = arguments
 
-        # Future
+        # Metrics
+        self.__aggregates = self.__get_aggregates()
+
+    def __get_aggregates(self) -> pd.DataFrame:
+        """
+
+        :return:
+        """
+
         key_name = f'{self.__arguments.get('prefix').get('metrics')}/metrics/aggregates/by_stage.json'
+        via = self.__arguments.get('questionable').get('via')
+
         __aggregates = src.s3.serials.Serials(
-            connector=connector, bucket_name=s3_parameters.external).objects(key_name=key_name)
-        frame = pd.json_normalize(data=__aggregates.get('training'), record_path='data')
-        self.__aggregates = frame.set_axis(labels=__aggregates.get('training').get('columns'), axis=1)
+            connector=self.__connector, bucket_name=self.__s3_parameters.external).objects(key_name=key_name)
+        __frame = pd.json_normalize(data=__aggregates.get(via), record_path='data')
+        frame = __frame.set_axis(labels=__aggregates.get(via).get('columns'), axis=1)
+
+        return frame
 
     def __p_anomalies(self, frame: pd.DataFrame, ts_id: int) -> np.ndarray:
         """
