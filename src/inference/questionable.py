@@ -37,7 +37,7 @@ class Questionable:
         """
 
         key_name = f'{self.__arguments.get('prefix').get('metrics')}/metrics/aggregates/by_stage.json'
-        via = self.__arguments.get('questionable').get('via')
+        via = self.__arguments.get('detecting').get('questionable').get('via')
 
         __aggregates = src.s3.serials.Serials(
             connector=self.__connector, bucket_name=self.__s3_parameters.external).objects(key_name=key_name)
