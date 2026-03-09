@@ -40,14 +40,13 @@ class Interface:
             connector=connector, s3_parameters=s3_parameters, arguments=arguments)()
 
         # Setting up
-        self.__get_attributes = dask.delayed(src.algorithms.attributes.Attributes().exc)
         self.__get_data = dask.delayed(src.algorithms.data.Data(arguments=arguments).exc)
         self.__gap = dask.delayed(src.algorithms.gap.Gap(arguments=arguments).exc)
         self.__asymptote = dask.delayed(src.algorithms.asymptote.Asymptote(arguments=arguments).exc)
         self.__get_special_estimates = dask.delayed(
             src.inference.interface.Interface(aggregates=self.__aggregates, arguments=arguments).exc)
-        self.__persist = dask.delayed(src.algorithms.persist.Persist().exc)
 
+    # pylint: disable=R0914,R0915
     def exc(self, specifications: list[sc.Specification], reference: pd.DataFrame):
         """
 
@@ -56,18 +55,19 @@ class Interface:
         :return:
         """
 
+        __get_attributes = dask.delayed(src.algorithms.attributes.Attributes().exc)
+        __persist = dask.delayed(src.algorithms.persist.Persist().exc)
         __occurrences = dask.delayed(src.algorithms.occurrences.Occurrences().exc)
-
 
         computations = []
         for specification in specifications:
-            attribute: atr.Attribute = self.__get_attributes(specification=specification)
+            attribute: atr.Attribute = __get_attributes(specification=specification)
             data: pd.DataFrame = self.__get_data(specification=specification)
             __estimates: pd.DataFrame = self.__get_special_estimates(
                 attribute=attribute, data=data, specification=specification)
             __appending_gap: pd.DataFrame = self.__gap(data=__estimates)
             __appending_asymptote: pd.DataFrame = self.__asymptote(data=__appending_gap)
-            estimates: pd.DataFrame = self.__persist(specification=specification, estimates=__appending_asymptote)
+            estimates: pd.DataFrame = __persist(specification=specification, estimates=__appending_asymptote)
 
             vector: dict = __occurrences(frame=estimates, specification=specification)
             computations.append(vector)
