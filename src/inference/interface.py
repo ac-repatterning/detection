@@ -1,6 +1,5 @@
 """Module inference/interface.py"""
 
-import boto3
 import pandas as pd
 
 import src.elements.attribute as atr
