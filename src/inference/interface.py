@@ -19,7 +19,7 @@ class Interface:
     def __init__(self, aggregates: pd.DataFrame, arguments: dict):
         """
 
-        :param aggregates: A frame of key error metrics per gauge station; an instance per gauge station.
+        :param aggregates: A frame of key error metrics per gauge station; an instance per gauge station.<br>
         :param arguments: A set of arguments vis-à-vis computation & storage objectives.<br>
         """
 
