@@ -18,6 +18,7 @@ import src.elements.attribute as atr
 import src.elements.s3_parameters as s3p
 import src.elements.specification as sc
 import src.inference.interface
+import src.inference.aggregates
 
 
 class Interface:
@@ -35,14 +36,16 @@ class Interface:
         """
 
         self.__n_cores = multiprocessing.cpu_count()
+        self.__aggregates = src.inference.aggregates.Aggregates(
+            connector=connector, s3_parameters=s3_parameters, arguments=arguments)()
 
         # Setting up
         self.__get_attributes = dask.delayed(src.algorithms.attributes.Attributes().exc)
         self.__get_data = dask.delayed(src.algorithms.data.Data(arguments=arguments).exc)
-        self.__get_special_estimates = dask.delayed(src.inference.interface.Interface(
-            connector=connector, s3_parameters=s3_parameters, arguments=arguments).exc)
         self.__gap = dask.delayed(src.algorithms.gap.Gap(arguments=arguments).exc)
         self.__asymptote = dask.delayed(src.algorithms.asymptote.Asymptote(arguments=arguments).exc)
+        self.__get_special_estimates = dask.delayed(
+            src.inference.interface.Interface(aggregates=self.__aggregates, arguments=arguments).exc)
         self.__persist = dask.delayed(src.algorithms.persist.Persist().exc)
 
     def exc(self, specifications: list[sc.Specification], reference: pd.DataFrame):
@@ -54,6 +57,7 @@ class Interface:
         """
 
         __occurrences = dask.delayed(src.algorithms.occurrences.Occurrences().exc)
+
 
         computations = []
         for specification in specifications:
