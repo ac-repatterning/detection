@@ -20,6 +20,7 @@ class Questionable:
 
         self.__aggregates = aggregates
 
+    # pylint: disable=E1101
     def __p_anomalies(self, frame: pd.DataFrame, ts_id: int) -> np.ndarray:
         """
 
