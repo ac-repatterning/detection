@@ -15,17 +15,16 @@ class Interface:
     Interface
     """
 
-    def __init__(self, aggregates: pd.DataFrame, arguments: dict):
+    def __init__(self, aggregates: pd.DataFrame):
         """
 
         :param aggregates: A frame of key error metrics per gauge station; an instance per gauge station.<br>
-        :param arguments: A set of arguments vis-à-vis computation & storage objectives.<br>
         """
 
         # Setting up
         self.__scaling = src.inference.scaling.Scaling()
         self.__approximating = src.inference.approximating.Approximating()
-        self.__questionable = src.inference.questionable.Questionable(aggregates=aggregates, arguments=arguments)
+        self.__questionable = src.inference.questionable.Questionable(aggregates=aggregates)
 
     def exc(self, attribute: atr.Attribute, data: pd.DataFrame, specification: sc.Specification) -> pd.DataFrame:
         """

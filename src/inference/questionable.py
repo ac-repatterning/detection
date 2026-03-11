@@ -3,6 +3,8 @@
 import numpy as np
 import pandas as pd
 
+import scipy
+
 import src.elements.specification as sc
 
 
@@ -11,15 +13,14 @@ class Questionable:
     Questionable
     """
 
-    def __init__(self, aggregates: pd.DataFrame, arguments: dict):
+    def __init__(self, aggregates: pd.DataFrame):
         """
         :param aggregates: metrics<br>
-        :param arguments:
         """
 
         self.__aggregates = aggregates
-        self.__fraction = arguments.get('detecting').get('questionable').get('fraction')
 
+    # pylint: disable=E1101
     def __p_anomalies(self, frame: pd.DataFrame, ts_id: int) -> np.ndarray:
         """
 
@@ -33,8 +34,8 @@ class Questionable:
 
         # Metrics & Boundaries
         metrics = self.__aggregates.loc[self.__aggregates['ts_id'] == ts_id, :][:1].squeeze()
-        l_limit = self.__fraction * metrics.get('minimum_pe')
-        u_limit = self.__fraction * metrics.get('maximum_pe')
+        l_limit = scipy.special.expit(abs(metrics.get('minimum_pe'))) * metrics.get('minimum_pe')
+        u_limit = scipy.special.expit(abs(metrics.get('maximum_pe'))) * metrics.get('maximum_pe')
 
         # An anomaly vis-à-vis metrics?
         p_outliers = np.where((points < l_limit) | (points > u_limit), 1, 0)
