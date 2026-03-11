@@ -44,7 +44,7 @@ class Interface:
         self.__gap = dask.delayed(src.algorithms.gap.Gap(arguments=arguments).exc)
         self.__asymptote = dask.delayed(src.algorithms.asymptote.Asymptote(arguments=arguments).exc)
         self.__get_special_estimates = dask.delayed(
-            src.inference.interface.Interface(aggregates=self.__aggregates, arguments=arguments).exc)
+            src.inference.interface.Interface(aggregates=self.__aggregates).exc)
 
     # pylint: disable=R0914,R0915
     def exc(self, specifications: list[sc.Specification], reference: pd.DataFrame):
