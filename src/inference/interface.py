@@ -36,7 +36,10 @@ class Interface:
         """
 
         if data.empty | (not attribute.scaling) | (not attribute.modelling) :
-            return data
+            return pd.DataFrame()
+
+        if data.shape[0] < attribute.modelling.get('n_sequence') + 1:
+            return pd.DataFrame()
 
         transforms: pd.DataFrame = self.__scaling.transform(data=data, scaling=attribute.scaling)
         master: mr.Master = mr.Master(data=data, transforms=transforms)
